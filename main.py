@@ -120,16 +120,19 @@ def pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters):
     findShearEccentric(pins, torque)
     shearDirection(pins, torque)
     maxShear, maxShearPin, minShear, minShearPin = totalShearStress(pins, pinsTested, load, doubleShear, allSame, totalArea)
-    display(pins, maxShear, maxShearPin, minShear, minShearPin, load, loadOffset, pinsTested, doubleShear, allSame)   #console output
+    # display(pins, maxShear, maxShearPin, minShear, minShearPin, load, loadOffset, pinsTested, doubleShear, allSame)   #console output
     return maxShear, maxShearPin, minShear, minShearPin, loadOffset
 
-def bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiameters):
+def bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, pinDiameters, output = True):
     overallMaxShear = 0
     overallMaxShearPin = ''
     overallMaxShearPinConfig = []
     greatestMinShear = 0
     greatestMinShearPin = ''
     greatestMinShearPinConfig = []
+
+    pinCombinations = itertools.combinations(range(1, totalPins + 1), pinsTested)
+
 
     if pinDiameters.count(pinDiameters[0]) == len(pinDiameters):
         allSame = True
@@ -139,17 +142,18 @@ def bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiamete
     f = open("output.txt", "w")
     for i in pinCombinations:
         maxShear, maxShearPin, minShear, minShearPin, loadOffset = pinTest(load, loadX, pinsTested, doubleShear, i, pinDiameters)
-        if i == pinCombinations[0]:
-            f.write(
-                '--------------------------------------------------------------------------------------------------------------------\n')
-            f.write(f'{pinsTested} pins, {load} lb load, offset {round(loadOffset, 3)} in. from the centroid of the pins.\n')
-            f.write(
-            f'Pins are in a {"double" if doubleShear else "single"} shear configuration with {f"all the same diameters ({pinDiameters[0]} in.)" if allSame else "varying diameters"}.\n')
-            f.write(
-                '--------------------------------------------------------------------------------------------------------------------\n\n')
-        f.write(f'Pin Configuration: {i}\n')
-        f.write(f"\tMax Shear Stress: {round(maxShear, 3)} psi, at {maxShearPin}\n")
-        f.write(f"\tMin Shear Stress: {round(minShear, 3)} psi, at {minShearPin}\n\n")
+        if output:
+            if i == pinCombinations[0]:
+                f.write(
+                    '--------------------------------------------------------------------------------------------------------------------\n')
+                f.write(f'{pinsTested} pins, {load} lb load, offset {round(loadOffset, 3)} in. from the centroid of the pins.\n')
+                f.write(
+                f'Pins are in a {"double" if doubleShear else "single"} shear configuration with {f"all the same diameters ({pinDiameters[0]} in.)" if allSame else "varying diameters"}.\n')
+                f.write(
+                    '--------------------------------------------------------------------------------------------------------------------\n\n')
+            f.write(f'Pin Configuration: {i}\n')
+            f.write(f"\tMax Shear Stress: {round(maxShear, 3)} psi, at {maxShearPin}\n")
+            f.write(f"\tMin Shear Stress: {round(minShear, 3)} psi, at {minShearPin}\n\n")
         if maxShear > overallMaxShear:
             overallMaxShear = maxShear
             overallMaxShearPin = maxShearPin
@@ -158,15 +162,33 @@ def bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiamete
             greatestMinShear = minShear
             greatestMinShearPin = minShearPin
             greatestMinShearPinConfig = i
-    f.write(
+    if output:
+        f.write(
         '--------------------------------------------------------------------------------------------------------------------\n')
-    f.write(
-        f'Maximum Shear Stress: {round(overallMaxShear, 3)} psi at {overallMaxShearPin} in the {pinsTested} pin configuration: {overallMaxShearPinConfig}\n')
-    f.write(
-        f'Greatest Minimum Shear Stress: {round(greatestMinShear, 3)} psi at {greatestMinShearPin} in the {pinsTested} pin configuration: {greatestMinShearPinConfig}\n')
-    f.write(
-        '--------------------------------------------------------------------------------------------------------------------')
-    f.close()
+        f.write(
+            f'Maximum Shear Stress: {round(overallMaxShear, 3)} psi at {overallMaxShearPin} in the {pinsTested} pin configuration: {overallMaxShearPinConfig}\n')
+        f.write(
+            f'Greatest Minimum Shear Stress: {round(greatestMinShear, 3)} psi at {greatestMinShearPin} in the {pinsTested} pin configuration: {greatestMinShearPinConfig}\n')
+        f.write(
+            '--------------------------------------------------------------------------------------------------------------------')
+        f.close()
+    return overallMaxShear, overallMaxShearPin, overallMaxShearPinConfig, greatestMinShear, greatestMinShearPin, greatestMinShearPinConfig
+
+def massivePinTest(load, loadX, pinsTested, doubleShear, totalPins, availablePinDiameters):
+    counter = 1
+    diameterCombinations = itertools.product(availablePinDiameters, repeat=pinsTested)
+    with open("output.txt", "w") as f:
+        for i in diameterCombinations:
+            print(i)
+            f.write(f'Pin Diameters: {i}\n')
+            overallMaxShear, overallMaxShearPin, overallMaxShearPinConfig, greatestMinShear, greatestMinShearPin, greatestMinShearPinConfig = bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, i, output = False)
+            f.write(
+                f'\tMaximum Shear Stress: {round(overallMaxShear, 3)} psi at {overallMaxShearPin} in the {pinsTested} pin configuration: {overallMaxShearPinConfig}\n')
+            f.write(
+                f'\tGreatest Minimum Shear Stress: {round(greatestMinShear, 3)} psi at {greatestMinShearPin} in the {pinsTested} pin configuration: {greatestMinShearPinConfig}\n')
+            print(counter)
+            counter += 1
+        f.close()
 
 
 def main():
@@ -175,14 +197,14 @@ def main():
     totalPins = 15  # possible number of pins
     pinsTested = 4
     doubleShear = True
-    pinCombinations = list(itertools.combinations(range(1, totalPins + 1), pinsTested))
-    pinDiameters = [0.1875, 0.1875, 0.1875, 0.1875]  # inches (default)
-
-    # bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiameters)
-
+    # pinCombinations = itertools.combinations(range(1, totalPins + 1), pinsTested)
+    # pinDiameters = [0.1875, 0.1875, 0.1875, 0.1875]  # inches (default)
+    availablePinDiameters = [1/16, 5/64, 2/16]
+    # bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, pinDiameters)
+    massivePinTest(load, loadX, pinsTested, doubleShear, totalPins, availablePinDiameters)
     # pinsSelection = pinCombinations[random.randint(0,len(pinCombinations)-1)]     # pick a random combination
-    pinsSelection = [4, 6, 10, 12]       # set a desired pin config
-    pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters)  # individual pin test
+    # pinsSelection = [4, 6, 10, 12]       # set a desired pin config
+    # pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters)  # individual pin test
 
 
 if __name__ == '__main__':
