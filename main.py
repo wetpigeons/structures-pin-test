@@ -27,7 +27,7 @@ def centroidAndTorque(pins, load, loadX):
     centroid = ((totalNumX / totalArea), (totalNumY / totalArea))
     loadOffset = loadX - centroid[0]
     torque = loadOffset * load
-    return centroid, torque, loadOffset
+    return centroid, torque, loadOffset, totalArea
 
 
 def distFromCentroid(pins, centroid):
@@ -63,7 +63,7 @@ def shearDirection(pins, torque):
         else:
             pins[pin]['shearVector'] = (0, 0)
 
-def totalShearStress(pins, pinsTested, load, doubleShear, allSame):
+def totalShearStress(pins, pinsTested, load, doubleShear, allSame, totalArea):
     maxShear = 0
     minShear = 2147483647
     maxShearPin = ''
@@ -72,7 +72,7 @@ def totalShearStress(pins, pinsTested, load, doubleShear, allSame):
         if allSame:
             pins[pin]['totalVector'] = (pins[pin]['shearVector'][0], pins[pin]['shearVector'][1] - load / pinsTested)
         else:
-            print("did not code yet...")
+            pins[pin]['totalVector'] = (pins[pin]['shearVector'][0], pins[pin]['shearVector'][1] - load * (pins[pin]['pinArea'] / totalArea))
         pins[pin]['totalShearForce'] = math.sqrt(pins[pin]['totalVector'][0] ** 2 + pins[pin]['totalVector'][1] ** 2)
         if doubleShear:
             pins[pin]['totalShearStress'] = pins[pin]['totalShearForce'] / (2 * pins[pin]['pinArea'])
@@ -115,11 +115,11 @@ def pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters):
     else:
         allSame = False
 
-    centroid, torque, loadOffset = centroidAndTorque(pins, load, loadX)
+    centroid, torque, loadOffset, totalArea = centroidAndTorque(pins, load, loadX)
     distFromCentroid(pins, centroid)
     findShearEccentric(pins, torque)
     shearDirection(pins, torque)
-    maxShear, maxShearPin, minShear, minShearPin = totalShearStress(pins, pinsTested, load, doubleShear, allSame)
+    maxShear, maxShearPin, minShear, minShearPin = totalShearStress(pins, pinsTested, load, doubleShear, allSame, totalArea)
     display(pins, maxShear, maxShearPin, minShear, minShearPin, load, loadOffset, pinsTested, doubleShear, allSame)   #console output
     return maxShear, maxShearPin, minShear, minShearPin, loadOffset
 
