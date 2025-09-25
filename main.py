@@ -37,21 +37,14 @@ def distFromCentroid(pins, centroid):
         dist = math.sqrt((pins[pin]['xCompDistance'] ** 2) + (pins[pin]['yCompDistance'] ** 2))
         pins[pin]['distance'] = dist
 
-# tau = F/A for each pin i... tau prop. to distance, so tau = rho * k (a constant). F = rho * k * A for each pin.
-# if all A are equal....... F(i) / rho(i) = k for all i, so ratio of shear force & distance to centroid are all same
-# F(1) = rho(1) * F(2) / rho(2)
-# F(3) = rho(3) * F(2) / rho(2) .... get all in terms of F(2)
-# sum of moments on each pin = torque applied,
-# (rho1/rho2)F2 + (rho2/rho2)F2 + (rho3/rho2)F2 + ... + Torque = 0
-# F2 = Torque/[(rho1*rho1/rho2)+(rho2*rho2/rho2)+(rho3*rho3/rho2)...]
 
 def findShearEccentric(pins, torque):
     for pin in pins:
         tempSum = 0
         if pins[pin]['distance'] != 0:
             for pin2 in pins:
-                tempSum += (pins[pin2]['distance'] ** 2) / pins[pin]['distance']
-            pins[pin]['shearEccentric'] = -torque / tempSum
+                tempSum += (pins[pin2]['distance'] ** 2) * pins[pin2]['pinArea']
+            pins[pin]['shearEccentric'] = -torque / tempSum * (pins[pin]['distance']*pins[pin]['pinArea'])
         else:
             pins[pin]['shearEccentric'] = 0
 
@@ -97,8 +90,7 @@ def totalShearStress(pins, pinsTested, load, doubleShear, allSame):
 
 def display(pins, maxShear, maxShearPin, minShear, minShearPin, load, loadOffset, pinsTested, doubleShear, allSame):
     print(f'{pinsTested} pins, {load} lb load, offset {round(loadOffset, 3)} in. from the centroid of the pins.')
-    print(f'Pins are in a {"double" if doubleShear else "single"} shear configuration with {"all the same diameters" if 
-                                                                                    allSame else "varying diameters"}.')
+    print(f'Pins are in a {"double" if doubleShear else "single"} shear configuration with {"all the same diameters" if allSame else "varying diameters"}.')
     for pin in pins:
         print(pin + ":")
         for i in pins[pin]:
@@ -128,7 +120,7 @@ def pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters):
     findShearEccentric(pins, torque)
     shearDirection(pins, torque)
     maxShear, maxShearPin, minShear, minShearPin = totalShearStress(pins, pinsTested, load, doubleShear, allSame)
-    # display(pins, maxShear, maxShearPin, minShear, minShearPin, load, loadOffset, pinsTested, doubleShear, allSame)   #console output
+    display(pins, maxShear, maxShearPin, minShear, minShearPin, load, loadOffset, pinsTested, doubleShear, allSame)   #console output
     return maxShear, maxShearPin, minShear, minShearPin, loadOffset
 
 def bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiameters):
@@ -152,8 +144,7 @@ def bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiamete
                 '--------------------------------------------------------------------------------------------------------------------\n')
             f.write(f'{pinsTested} pins, {load} lb load, offset {round(loadOffset, 3)} in. from the centroid of the pins.\n')
             f.write(
-            f'Pins are in a {"double" if doubleShear else "single"} shear configuration with {f"all the same diameters ({pinDiameters[0]} in.)" if
-            allSame else "varying diameters"}.\n')
+            f'Pins are in a {"double" if doubleShear else "single"} shear configuration with {f"all the same diameters ({pinDiameters[0]} in.)" if allSame else "varying diameters"}.\n')
             f.write(
                 '--------------------------------------------------------------------------------------------------------------------\n\n')
         f.write(f'Pin Configuration: {i}\n')
@@ -179,20 +170,21 @@ def bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiamete
 
 
 def main():
-    load = 22257  # unit load (lbs)
+    load = 1  # unit load (lbs)
     loadX = 0  # load position (1st hole)
     totalPins = 15  # possible number of pins
-    pinsTested = 6
+    pinsTested = 4
     doubleShear = True
     pinCombinations = list(itertools.combinations(range(1, totalPins + 1), pinsTested))
-    pinDiameters = [0.188, 0.188, 0.188, 0.188, 0.188, 0.188]  # inches (default)
+    pinDiameters = [0.1875, 0.1875, 0.1875, 0.1875]  # inches (default)
 
-    bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiameters)
+    # bigPinTest(load, loadX, pinsTested, doubleShear, pinCombinations, pinDiameters)
 
     # pinsSelection = pinCombinations[random.randint(0,len(pinCombinations)-1)]     # pick a random combination
-    # pinsSelection = [2, 5, 8, 11, 14, 15]       # set a desired pin config
-    # pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters)  # individual pin test
+    pinsSelection = [4, 6, 10, 12]       # set a desired pin config
+    pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters)  # individual pin test
 
 
 if __name__ == '__main__':
     main()
+
