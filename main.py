@@ -4,6 +4,7 @@ import random
 import math
 import time
 from fractions import Fraction
+from multiprocessing import Pool, cpu_count
 
 def pinInfo(selection, diameter):
     # (0,0) aligns with left most hole for load & lowest test hole
@@ -17,7 +18,6 @@ def pinInfo(selection, diameter):
         pinArea = math.pi * (diameter[i] ** 2) / 4
         pins[f'Pin {selection[i]}']= {'xPos': pinX, 'yPos': pinY, 'diameter': diameter[i], 'pinArea': pinArea}
     return pins
-
 
 def centroidAndTorque(pins, load, loadX):
     totalNumX = 0
@@ -197,6 +197,54 @@ def massivePinTest(load, loadX, pinsTested, doubleShear, totalPins, availablePin
             counter += 1
         f.close()
 
+def run_one_case(args):
+    """Runs one diameter combination through bigPinTest and returns a row for CSV."""
+    counter, load, loadX, pinsTested, doubleShear, totalPins, diameters = args
+    overallMaxShear, overallMaxShearPin, overallMaxShearPinConfig, \
+        greatestMinShear, greatestMinShearPin, greatestMinShearPinConfig = bigPinTest(
+            load, loadX, pinsTested, doubleShear, totalPins,
+            [float(Fraction(j)) for j in diameters], output=False
+        )
+    return [
+        counter,
+        " ".join(map(str, diameters)),
+        round(overallMaxShear, 3),
+        overallMaxShearPin,
+        overallMaxShearPinConfig,
+        round(greatestMinShear, 3),
+        greatestMinShearPin,
+        greatestMinShearPinConfig,
+    ]
+
+
+
+def massivePinTest_parallel(load, loadX, pinsTested, doubleShear, totalPins, availablePinDiameters):
+    start_time = time.time()
+    diameterCombinations = itertools.product(availablePinDiameters, repeat=pinsTested)
+    total_combos = len(availablePinDiameters) ** pinsTested
+
+    # Prepare arguments for each task
+    tasks = [
+        (idx, load, loadX, pinsTested, doubleShear, totalPins, combo)
+        for idx, combo in enumerate(diameterCombinations, start=1)
+    ]
+
+    # Use all CPU cores
+    with Pool(cpu_count()) as pool:
+        with open("output.csv", "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                "Comb. #", "Pin Diams", "Max Shear (psi)", "Max Shear Pin",
+                "Max Shear Cfg", "Max Min Shear (psi)", "Max Min Shear Pin", "Max Min Shear Cfg"
+            ])
+
+            for idx, row in enumerate(pool.imap_unordered(run_one_case, tasks), start=1):
+                writer.writerow(row)
+                if idx % 100 == 0:  # print progress every 100 rows
+                    percent_done = (idx / total_combos) * 100
+                    print(f"[{idx}/{total_combos}] ({percent_done:.2f}%) Done")
+
+    print(f"--- {round(time.time() - start_time, 2)} seconds ---")
 
 def main():
     start_time = time.time()
@@ -209,7 +257,7 @@ def main():
     # pinDiameters = [0.1875, 0.1875, 0.1875, 0.1875]  # inches (default)
     # bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, pinDiameters)
     availablePinDiameters = ["1/16", "5/64", "3/32", "1/8", "9/64", "5/32", "3/16", "7/32", "1/4"]
-    massivePinTest(load, loadX, pinsTested, doubleShear, totalPins, availablePinDiameters)
+    massivePinTest_parallel(load, loadX, pinsTested, doubleShear, totalPins, availablePinDiameters)
     # pinsSelection = pinCombinations[random.randint(0,len(pinCombinations)-1)]     # pick a random combination
     # pinsSelection = [4, 6, 10, 12]       # set a desired pin config
     # pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters)  # individual pin test
@@ -219,5 +267,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

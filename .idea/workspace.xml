@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="730986db-e2e4-4e89-9342-b378a0614892" name="Changes" comment="created massivePinTest to iterate through possible combinations with varying pin diameters..&#10;&#10;output file is wonky, however.">
+    <list default="true" id="730986db-e2e4-4e89-9342-b378a0614892" name="Changes" comment="configured massivePinTest to output to csv, which *seems* like its working fine - have not yet tested with much larger sets&#10;&#10;added progress gauge too">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output.txt" beforeDir="false" afterPath="$PROJECT_DIR$/output.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +70,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758844554441</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="configured massivePinTest to output to csv, which *seems* like its working fine - have not yet tested with much larger sets&#10;&#10;added progress gauge too">
+      <option name="closed" value="true" />
+      <created>1758847887852</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1758847887852</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -91,10 +98,11 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update totalShearStress to accomodate varying areas" />
     <MESSAGE value="created massivePinTest to iterate through possible combinations with varying pin diameters..&#10;&#10;output file is wonky, however." />
-    <option name="LAST_COMMIT_MESSAGE" value="created massivePinTest to iterate through possible combinations with varying pin diameters..&#10;&#10;output file is wonky, however." />
+    <MESSAGE value="configured massivePinTest to output to csv, which *seems* like its working fine - have not yet tested with much larger sets&#10;&#10;added progress gauge too" />
+    <option name="LAST_COMMIT_MESSAGE" value="configured massivePinTest to output to csv, which *seems* like its working fine - have not yet tested with much larger sets&#10;&#10;added progress gauge too" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/structures_pin_test$main.coverage" NAME="main Coverage Results" MODIFIED="1758836150840" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/structuresPinTest$main.coverage" NAME="main Coverage Results" MODIFIED="1758847646468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/structuresPinTest$main.coverage" NAME="main Coverage Results" MODIFIED="1758848610283" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
