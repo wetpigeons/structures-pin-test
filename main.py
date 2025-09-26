@@ -1,6 +1,9 @@
+import csv
 import itertools
 import random
 import math
+import time
+from fractions import Fraction
 
 def pinInfo(selection, diameter):
     # (0,0) aligns with left most hole for load & lowest test hole
@@ -140,10 +143,11 @@ def bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, pinDiameters, ou
         allSame = False
 
     f = open("output.txt", "w")
+    first = 1
     for i in pinCombinations:
         maxShear, maxShearPin, minShear, minShearPin, loadOffset = pinTest(load, loadX, pinsTested, doubleShear, i, pinDiameters)
         if output:
-            if i == pinCombinations[0]:
+            if first:
                 f.write(
                     '--------------------------------------------------------------------------------------------------------------------\n')
                 f.write(f'{pinsTested} pins, {load} lb load, offset {round(loadOffset, 3)} in. from the centroid of the pins.\n')
@@ -151,6 +155,7 @@ def bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, pinDiameters, ou
                 f'Pins are in a {"double" if doubleShear else "single"} shear configuration with {f"all the same diameters ({pinDiameters[0]} in.)" if allSame else "varying diameters"}.\n')
                 f.write(
                     '--------------------------------------------------------------------------------------------------------------------\n\n')
+                first = 0
             f.write(f'Pin Configuration: {i}\n')
             f.write(f"\tMax Shear Stress: {round(maxShear, 3)} psi, at {maxShearPin}\n")
             f.write(f"\tMin Shear Stress: {round(minShear, 3)} psi, at {minShearPin}\n\n")
@@ -177,36 +182,42 @@ def bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, pinDiameters, ou
 def massivePinTest(load, loadX, pinsTested, doubleShear, totalPins, availablePinDiameters):
     counter = 1
     diameterCombinations = itertools.product(availablePinDiameters, repeat=pinsTested)
-    with open("output.txt", "w") as f:
+    total_combos = len(availablePinDiameters)**pinsTested
+    with (open("output.csv", "w", newline="", encoding="utf-8") as f):
+        writer = csv.writer(f)
+        writer.writerow([
+            "Comb. #", "Pin Diams", "Max Shear (psi)", "Max Shear Pin", "Max Shear Cfg", "Max Min Shear (psi)", "Max Min Shear Pin", "Max Min Shear Cfg"
+        ])
         for i in diameterCombinations:
-            print(i)
-            f.write(f'Pin Diameters: {i}\n')
-            overallMaxShear, overallMaxShearPin, overallMaxShearPinConfig, greatestMinShear, greatestMinShearPin, greatestMinShearPinConfig = bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, i, output = False)
-            f.write(
-                f'\tMaximum Shear Stress: {round(overallMaxShear, 3)} psi at {overallMaxShearPin} in the {pinsTested} pin configuration: {overallMaxShearPinConfig}\n')
-            f.write(
-                f'\tGreatest Minimum Shear Stress: {round(greatestMinShear, 3)} psi at {greatestMinShearPin} in the {pinsTested} pin configuration: {greatestMinShearPinConfig}\n')
-            print(counter)
+            overallMaxShear, overallMaxShearPin, overallMaxShearPinConfig, greatestMinShear, greatestMinShearPin, greatestMinShearPinConfig = bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, [float(Fraction(j)) for j in i], output = False)
+            writer.writerow([
+                counter, " ".join(map(str, i)), round(overallMaxShear, 3), overallMaxShearPin, overallMaxShearPinConfig, round(greatestMinShear, 3), greatestMinShearPin, greatestMinShearPinConfig])
+            percent_done = (counter / total_combos) * 100
+            print(f"[{counter}/{total_combos}] ({percent_done:.2f}%) Done")
             counter += 1
         f.close()
 
 
 def main():
+    start_time = time.time()
     load = 1  # unit load (lbs)
     loadX = 0  # load position (1st hole)
     totalPins = 15  # possible number of pins
-    pinsTested = 4
+    pinsTested = 6
     doubleShear = True
     # pinCombinations = itertools.combinations(range(1, totalPins + 1), pinsTested)
     # pinDiameters = [0.1875, 0.1875, 0.1875, 0.1875]  # inches (default)
-    availablePinDiameters = [1/16, 5/64, 2/16]
     # bigPinTest(load, loadX, pinsTested, doubleShear, totalPins, pinDiameters)
+    availablePinDiameters = ["1/16", "5/64", "3/32", "1/8", "9/64", "5/32", "3/16", "7/32", "1/4"]
     massivePinTest(load, loadX, pinsTested, doubleShear, totalPins, availablePinDiameters)
     # pinsSelection = pinCombinations[random.randint(0,len(pinCombinations)-1)]     # pick a random combination
     # pinsSelection = [4, 6, 10, 12]       # set a desired pin config
     # pinTest(load, loadX, pinsTested, doubleShear, pinsSelection, pinDiameters)  # individual pin test
 
+    print("--- %s seconds ---" % round((time.time() - start_time), 2))
+
 
 if __name__ == '__main__':
     main()
+
 
