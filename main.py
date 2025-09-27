@@ -1,5 +1,6 @@
 import csv
 import itertools
+import os
 import random
 import math
 import time
@@ -238,9 +239,11 @@ def massivePinTest_parallel(load, loadX, pinsTested, doubleShear, totalPins, ava
                 "Max Shear Cfg", "Max Min Shear (psi)", "Max Min Shear Pin", "Max Min Shear Cfg"
             ])
 
-            for idx, row in enumerate(pool.imap_unordered(run_one_case, tasks), start=1):
+            for idx, row in enumerate(pool.imap_unordered(run_one_case, tasks, chunksize = 100), start=1):
                 writer.writerow(row)
                 if idx % 100 == 0:  # print progress every 100 rows
+                    f.flush()
+                    os.fsync(f.fileno())
                     percent_done = (idx / total_combos) * 100
                     print(f"[{idx}/{total_combos}] ({percent_done:.2f}%) Done")
 
