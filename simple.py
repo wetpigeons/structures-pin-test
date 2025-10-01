@@ -1,5 +1,8 @@
 import itertools
 import math
+import time
+from fractions import Fraction
+
 import numpy as np
 def pin_info(selection, diameters):
     pins = np.array(selection)
@@ -60,19 +63,40 @@ def pin_test(load, load_x, selection, diameters):
     max_shear_stress, max_shear_pin, total_shear_stress = find_total_shear_stress(pins_eccentric_shear_x, pins_eccentric_shear_y, load, pins_area, double_shear=True)
     # print("Max Shear Stress: " + str(round(max_shear_stress, 3)) + " at Pin " + str(int(max_shear_pin)))
     # print(total_shear_stress)
-    return max_shear_stress, max_shear_pin
-def pin_test_optimization(load, load_x,  diameters, pins_tested, total_pins):
+    return max_shear_stress, max_shear_pin, selection
+def pin_test_optimization(load, load_x, diameters, pins_tested, total_pins):
     pin_combinations = np.array(list(itertools.combinations(range(1, total_pins + 1), pins_tested)))
-    all_max_shear_stresses, all_max_shear_pins = np.zeros(math.comb(total_pins, pins_tested)), np.zeros(math.comb(total_pins, pins_tested))
+    max_shear_info = np.zeros((math.comb(total_pins, pins_tested), pins_tested + 2))
     for i in range(np.size(pin_combinations, axis=0)):
-        all_max_shear_stresses[i], all_max_shear_pins[i] = pin_test(load, load_x, pin_combinations[i], diameters)
-        print("Pin Config.: " + str(pin_combinations[i]) + "\n\tMax Stress: " + str(round(all_max_shear_stresses[i], 3)) + " at Pin " + str(pin_combinations[i][int(all_max_shear_pins[i])]))
+        max_shear_stress, max_shear_pin, selection = pin_test(load, load_x, pin_combinations[i], diameters)
+        max_shear_info[i, :4], max_shear_info[i, 4], = selection, round(max_shear_stress, 2)
+        max_shear_info[i, 5] = max_shear_info[i, max_shear_pin]
+    max_index = np.argmax(max_shear_info[:, 4])
+    min_index = np.argmin(max_shear_info[:, 4])
+    overall_max_shear_stress, weakest_pin_comb, weakest_pin = max_shear_info[max_index, 4], max_shear_info[max_index, :4], max_shear_info[max_index, 5]
+    overall_min_shear_stress, strongest_pin_comb, strongest_pin = max_shear_info[min_index, 4], max_shear_info[min_index, :4], max_shear_info[min_index, 5],
+    # print("Strongest pin combination:", strongest_pin_comb, "with a maximum shear stress of", round(overall_min_shear_stress, 2), "psi at Pin", int(strongest_pin))
+def pin_test_diff_diameters(load, load_x, pins_tested, total_pins, available_diameters, double_shear = True):
+    counter = 1
+    diameter_combinations = np.array(list(itertools.product(available_diameters, repeat=pins_tested)))
+    total_combos = len(available_diameters) ** pins_tested
+    for i in range(np.size(diameter_combinations, axis=0)):
+        pin_test_optimization(
+            load, load_x, [float(Fraction(j)) for j in diameter_combinations[i]], pins_tested, total_pins)
+        percent_done = (counter / total_combos) * 100
+        print(f"[{counter}/{total_combos}] ({percent_done:.2f}%) Done")
+        counter += 1
 def main():
+    start_time = time.time()
     load = 1
     load_x = 0
-    selection = [12, 13, 14, 15]
+    selection = np.array([1, 2, 13, 14])
     diameters = [0.1875, 0.1875, 0.1875, 0.1875]
     pin_test_optimization(load, load_x, diameters, pins_tested = 4, total_pins = 15)
     # pin_test(load, load_x, selection, diameters)
+    available_diameters = ["1/16", "5/64", "3/32", "1/8", "9/64", "5/32", "3/16", "7/32", "1/4"]
+    pin_test_diff_diameters(load, load_x, 4, 15, available_diameters)
+
+    print("--- %s seconds ---" % round((time.time() - start_time), 2))
 if __name__ == '__main__':
     main()
