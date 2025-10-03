@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="730986db-e2e4-4e89-9342-b378a0614892" name="Changes" comment="converted code to use numpy">
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/structuresPinTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/structuresPinTest.iml" afterDir="false" />
+    <list default="true" id="730986db-e2e4-4e89-9342-b378a0614892" name="Changes" comment="turns out im bad with numpy and this is really slow lol. oops i will fix!!!">
+      <change afterPath="$PROJECT_DIR$/simple mk.2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/output.csv" beforeDir="false" afterPath="$PROJECT_DIR$/output.csv" afterDir="false" />
@@ -102,6 +100,7 @@
       <workItem from="1758946235977" duration="9000" />
       <workItem from="1758946569709" duration="714000" />
       <workItem from="1759279430148" duration="12849000" />
+      <workItem from="1759349349897" duration="15294000" />
     </task>
     <task id="LOCAL-00001" summary="update totalShearStress to accomodate varying areas">
       <option name="closed" value="true" />
@@ -151,7 +150,14 @@
       <option name="project" value="LOCAL" />
       <updated>1759286307656</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="turns out im bad with numpy and this is really slow lol. oops i will fix!!!">
+      <created>1759349230269</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1759349230269</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -175,7 +181,8 @@
     <MESSAGE value="added multiprocessing (thanks chat &lt;3)" />
     <MESSAGE value="Modified chunksize per core and added flush statements, + the output" />
     <MESSAGE value="converted code to use numpy" />
-    <option name="LAST_COMMIT_MESSAGE" value="converted code to use numpy" />
+    <MESSAGE value="turns out im bad with numpy and this is really slow lol. oops i will fix!!!" />
+    <option name="LAST_COMMIT_MESSAGE" value="turns out im bad with numpy and this is really slow lol. oops i will fix!!!" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -189,8 +196,9 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/structuresPinTest$simple.coverage" NAME="simple Coverage Results" MODIFIED="1759293559737" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/structures_pin_test$main.coverage" NAME="main Coverage Results" MODIFIED="1759348339446" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/structures_pin_test$simple_mk_2.coverage" NAME="simple mk.2 Coverage Results" MODIFIED="1759450953971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/structures_pin_test$main.coverage" NAME="main Coverage Results" MODIFIED="1759450934996" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/structuresPinTest$main.coverage" NAME="main Coverage Results" MODIFIED="1758896979602" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/structures_pin_test$simple.coverage" NAME="simple Coverage Results" MODIFIED="1759348088394" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/structures_pin_test$simple.coverage" NAME="simple Coverage Results" MODIFIED="1759450261841" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
