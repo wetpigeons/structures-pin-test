@@ -14,7 +14,7 @@ def main():
     load = 1
     shear = 2
     big = True
-    bigger = True
+    bigger = False
     diameter_combinations = [diameters]
     diams = 1
     pin_combinations = [selection]
@@ -71,7 +71,20 @@ def main():
     pins[:, :, :, 13] = pins[:, :, :, 12] / (shear * pins[:, :, :, 4])
 
     np.set_printoptions(precision=3, floatmode='maxprec', suppress=True)
-    print(pins[0, 0, :, :])
+    if big and not bigger:
+        largest_stress = np.max(np.max(pins[:,:,:,13], axis=2))
+        largest_stress_indices = np.where(pins[:,:,:,13] == largest_stress)
+        print(f'Largest Shear Stress (Earliest Failure): {round(largest_stress, 3)}, '
+              f'at pin configuration(s):\n'
+              f'{pins[largest_stress_indices[0], largest_stress_indices[1], :, 0]}')
+        print(f'At pin(s): {pins[largest_stress_indices[0], largest_stress_indices[1], largest_stress_indices[2], 0]} respectively.\n')
+        lowest_max_stress = np.min(np.max(pins[:, :, :, 13], axis=2))
+        lowest_max_stress_indices = np.where(pins[:, :, :, 13] == lowest_max_stress)
+        print(f'Lowest Max Shear Stress: {round(lowest_max_stress, 3)}, '
+              f'at pin configuration(s):\n'
+              f'{pins[lowest_max_stress_indices[0], lowest_max_stress_indices[1], :, 0]}')
+        print(
+            f'At pin(s): {pins[lowest_max_stress_indices[0], lowest_max_stress_indices[1], lowest_max_stress_indices[2], 0]} respectively.\n')
 
 
 if __name__ == '__main__':
