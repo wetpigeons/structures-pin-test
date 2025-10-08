@@ -77,29 +77,24 @@ def main():
         print(f'Largest Shear Stress (Earliest Failure): {round(largest_stress, 3)}, '
               f'at pin configuration(s):\n'
               f'{pins[largest_stress_indices[0], largest_stress_indices[1], :, 0]}')
-        print(f'At pin(s): {pins[largest_stress_indices[0], largest_stress_indices[1], largest_stress_indices[2], 0]} respectively.\n')
+        print(f'At pin(s): {pins[largest_stress_indices[0], largest_stress_indices[1], largest_stress_indices[2], 0]} respectively.')
+        print(f'Total Stress: {np.sum(pins[largest_stress_indices[0], largest_stress_indices[1], :, 13], axis=1)}, Total Force: {np.sum(pins[largest_stress_indices[0], largest_stress_indices[1], :, 12], axis=1)}\n')
+
         lowest_max_stress = np.min(np.max(pins[:, :, :, 13], axis=2))
         lowest_max_stress_indices = np.where(pins[:, :, :, 13] == lowest_max_stress)
         print(f'Lowest Max Shear Stress: {round(lowest_max_stress, 3)}, '
               f'at pin configuration(s):\n'
               f'{pins[lowest_max_stress_indices[0], lowest_max_stress_indices[1], :, 0]}')
         print(
-            f'At pin(s): {pins[lowest_max_stress_indices[0], lowest_max_stress_indices[1], lowest_max_stress_indices[2], 0]} respectively.\n')
+            f'At pin(s): {pins[lowest_max_stress_indices[0], lowest_max_stress_indices[1], lowest_max_stress_indices[2], 0]} respectively.')
+        print(f'Total Stress: {np.sum(pins[lowest_max_stress_indices[0], lowest_max_stress_indices[1], :, 13], axis=1)}, Total Force: {np.sum(pins[lowest_max_stress_indices[0], lowest_max_stress_indices[1], :, 12], axis=1)}\n')
+    elif not big:
+        print(f'Pin Configuration: {pins[0,0,:,0]}')
+        print(f'Max Shear Stress: {round(np.max(pins[0,0,:,13]), 3)} at pin {pins[0, 0, np.argmax(pins[0, 0, :, 13]), 0]}')
+        print(f'Total Stress: {round(np.sum(pins[0, 0, :, 13]), 3)}, Total Force: {round(np.sum(pins[0, 0, :, 12]), 3)}')
 
 
 if __name__ == '__main__':
     start_time = time.time()
     main()
     print("--- %s seconds ---" % round((time.time() - start_time), 2))
-
-    # pins_x = pins[:, :, 1]
-    # pins_y = pins[:, :, 2]
-    # pins_diams = pins[:, :, 3]
-    # pins_areas = pins[:, :, 4]
-    # pins_x_centr = pins[:, :, 5]
-    # pins_y_centr = pins[:, :, 6]
-    # pins_to_centr = pins[:, :, 7]
-    # pins_ecc_shear = pins[:, :, 8]
-    # pins_ecc_x = pins[:, :, 9]
-    # pins_ecc_y = pins[:, :, 10]
-    # pins_total_shear = pins[:, :, 11]
